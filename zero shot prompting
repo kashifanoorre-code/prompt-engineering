@@ -1,0 +1,25 @@
+!pip install -U langchain-google-genai google-genai
+
+from langchain_core.prompts import ChatPromptTemplate
+from langchain_google_genai import ChatGoogleGenerativeAI
+
+my_api_key = " "
+
+llm = ChatGoogleGenerativeAI(
+    model = "gemini-2.5-flash",
+    google_api_key = my_api_key,
+    temperature = 0.7
+)
+
+prompt = ChatPromptTemplate([
+    ("system", "Classify the statement as positive, negative or neutral"),
+    ("human", "Text : {text}")
+])
+
+inputs = {
+    "text": "i hate eating apples"
+}
+
+chain = prompt | llm
+response = chain.invoke(inputs)
+print(response.content)
