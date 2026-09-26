@@ -1,0 +1,59 @@
+!pip install -U langchain-core langchain-google-genai
+
+import os
+#importing ChatPromptTemplate which allows us to create a structured prompt containing different types of messages.
+from langchain_core.prompts import ChatPromptTemplate
+
+#importing gemini
+from langchain_google_genai import ChatGoogleGenerativeAI
+
+#MY API KEY FROM AI STUDIO
+#The API key acts like a credential allowing your program to access the API
+my_api_key= " "
+
+# USE GEMINI-3.5-FLASH OR GEMINI-3.1-LITE
+#this creates the gemini model connection
+#storing gemini model object in variable llm
+llm = ChatGoogleGenerativeAI( #creates an object that represents gemini chat model
+    
+    model = "gemini-3.5-flash", #specifies which model to use
+    
+    google_api_key = my_api_key, #passing the key to gemini
+    
+    temperature=0.7, #sets creativity level
+    )
+
+#now we create the prompts as a list and store it in a variable
+cot_prompt = ChatPromptTemplate.from_messages([
+    (
+        #The System Message
+        #This sets the persona and the rules for the AI. It tells the model who it is (a data science teaching assistant) and 
+        #how it should answer questions (by showing step-by-step reasoning).IT IS ROLE BASED PROGRAMMING.
+        "system",
+        "You are an expert Automated DSA Grading Assistant. Your task is to rigorously evaluate a student's answer against a reference answer for a Data Structures and Algorithms question. You must output your response strictly in the following 4-step format:\n\n"
+        "STEP 1: CONCEPTUAL CORRECTNESS (Analyse if key technical terms and algorithmic mechanics are present)\n"
+        "STEP 2: MISSING DETAILS (Identify any technical gaps, edge cases, or errors)\n"
+        "STEP 3: FINAL SCORE (Assign a mark out of 5 with a short justification)\n"
+        "STEP 4: TEST THE CHAIN (Apply this prompt logic to the provided sample input)\n\n"
+        "Maintain an objective, academic, and precise tone."
+
+    ),
+
+    
+    (
+    #This represents the input question or prompt coming from the user that you want the AI to solve.
+        "human",
+        "QUESTION: {question}/n "
+        "STUDENT ANSWER : {student_answer}/n "
+        "REFERENCE ANSWER : {reference_answer}"
+    )
+    
+])
+sample_inputs = {
+    "question" : "TEST THE CHAIN ON THIS SAMPLE INPUT- HOW DOES INSERTION SORT ACHIEVE A BEST CASE TIME COMPLEXITY OF O(N) ON A NEARLY SORTED ARRAY WHEREAS STANDARD BUBBLE SORT TABLE ORDER OF O(N^2) UNLESS MODIFIED" ,
+    "reference_answer" : "Insertion sort performs a single pass with O(n) comparisons. If sorted, inner loop fails immediately resulting in 0 shifts. Standard bubble sort uses nested loops taking O(n^2) unless modified with a swap flag.",
+    "student_answer" : "INSERTION SORT ONLY SHIFTS ELEMENTS IF THEY ARE LARGER THEN THE KEY BEING INSERTED, SO IF THE ARRAY IS ALREADY SORTED IT DOES 0 SHIFTS AND JUST PASSES THROUGH ONCE. BUBBLE SORT COMPARES EVERY PAIR IN LOOPS UNLESS YOU ADD A BOOLEAN FLAG TO STOP EARLY IF NO SWAPS HAPPEN."
+}
+chain = cot_prompt | llm # | takes the info from the left and gives it to the thing on the right 
+response = chain.invoke(sample_inputs) #invoke execuetes it and everything that gemini returns is stored in response
+print(response.content) #prints the content of the response
