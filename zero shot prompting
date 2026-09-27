@@ -23,3 +23,28 @@ inputs = {
 chain = prompt | llm
 response = chain.invoke(inputs)
 print(response.content)
+
+
+from langchain_core.prompts import ChatPromptTemplate
+from langchain_google_genai import ChatGoogleGenerativeAI
+
+my_api_key = "api_key"
+
+llm = ChatGoogleGenerativeAI(
+    model = "gemini-2.5-flash",
+    google_api_key = my_api_key,
+    temperature = 0.6
+)
+
+prompt = ChatPromptTemplate([
+    ("system","classify whether the email is spam or not"),
+    ("human","Text : {text}")
+])
+
+inputs = {
+    "text" : "Congratulations! You have won ₹10,00,000. Click this link immediately to claim your prize."
+}
+
+chain = prompt | llm
+response = chain.invoke(inputs)
+print(response.content)
