@@ -24,7 +24,7 @@ prompt = ChatPromptTemplate([
     - Give deeper technical explanations.
     - Skip basic explanations.
 
-    Student level: {level}""")
+    Student level: {level}"""),
     ("human","question: {question}")
 ])
 
