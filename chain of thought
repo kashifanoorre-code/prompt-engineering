@@ -1,0 +1,23 @@
+from langchain_core.prompts import ChatPromptTemplate
+from langchain_google_genai import ChatGoogleGenerativeAI
+
+my_api_key = "api_key"
+
+llm = ChatGoogleGenerativeAI(
+    model = "gemini-2.5-flash",
+    google_api_key = my_api_key,
+    temperature = 0.5
+)
+
+prompt = ChatPromptTemplate([
+    ("system", "solve the problem step by step and provide the answer"),
+    ("human", "Text : {text}")
+])
+
+inputs = {
+    "text": "A student has ₹1,000. She spends 30% of it on books and then spends 20% of the remaining amount on stationery. How much money does she have left?"
+}
+
+chain = prompt | llm
+response = chain.invoke(inputs)
+print(response.content)
