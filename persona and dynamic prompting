@@ -1,0 +1,38 @@
+from langchain_core.prompts import ChatPromptTemplate
+from langchain_google_genai import ChatGoogleGenerativeAI
+
+my_api_key = "my_api"
+
+llm = ChatGoogleGenerativeAI(
+    model = "gemini-2.5-flash",
+    google_api_key = my_api_key,
+    temperature = 0.2
+)
+
+prompt = ChatPromptTemplate([
+    ("system", """
+    You are an excellent and patient Python tutor.
+    Adapt your explanation according to the student's level.
+
+    If the student is a beginner:
+    - Use simple language.
+    - Explain technical terms.
+    - Give simple examples.
+
+    If the student is advanced:
+    - Use technical terminology.
+    - Give deeper technical explanations.
+    - Skip basic explanations.
+
+    Student level: {level}""")
+    ("human","question: {question}")
+])
+
+inputs = {
+    "level" : "beginner",
+    "question" : "Explain recursion in Python."
+}
+
+chain = prompt | llm
+response = chain.invoke(inputs)
+print(response.content)
